@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]> <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "w3.org/TR/html4/strict.dtd"> <html class="oldIE ie ie7"> <![endif]-->
+<!--[if IE 7 ]> <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "w3.org/TR/html4/strict.dtd"> <html class="oldIE ie ie7"> <![endif]-->
+<!--[if IE 8 ]> <!doctype html> <html class="oldIE ie ie8"> <![endif]-->
+<!--[if IE 9 ]> <!doctype html> <html class="ie9 ie html5"> <![endif]-->
+<!--[if !(IE 9)|!(IE)]>--><!doctype html> <html class="notIE html5" lang="en"> <!--<![endif]-->
+	<head>
+		<meta charset=utf-8>
+		<title>Facebook Test</title>
+		
+		
+	</head>
+	<body>
+		<div id="fb-root"></div>
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+		<script>
+			window.fbAsyncInit = function() {
+				// init the FB JS SDK
+				FB.init({
+					appId      : '422494581163096', // App ID from the App Dashboard
+					channelUrl : '//WWW.HOOKYINTERACTIVE.COM/channel.php', // Channel File for x-domain communication
+					status     : true, // check the login status upon init?
+					cookie     : true, // set sessions cookies to allow your server to access the session?
+					xfbml      : true  // parse XFBML tags on this page?
+				});
+
+			// Additional initialization code such as adding Event Listeners goes here
+
+
+
+			};
+
+			// Load the SDK's source Asynchronously
+			// Note that the debug version is being actively developed and might 
+			// contain some type checks that are overly strict. 
+			// Please report such bugs using the bugs tool.
+			(function(d, debug){
+				var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+				if (d.getElementById(id)) {return;}
+				js = d.createElement('script'); js.id = id; js.async = true;
+				js.src = "//connect.facebook.net/en_US/all" + (debug ? "/debug" : "") + ".js";
+				ref.parentNode.insertBefore(js, ref);
+			}(document, /*debug*/ false));
+
+			
+			function fbLogin() {
+				FB.login(function(response) {
+					if (response.authResponse) {
+						accessToken = FB.getAuthResponse()['accessToken'];
+						console.log('Access Token = '+ accessToken);
+						console.log('Welcome!  Fetching your information.... ');
+						FB.api('/me', function(response) {
+							console.log('Good to see you, ' + response.name + '.');
+						});
+					} else {
+						console.log('User cancelled login or did not fully authorize.');
+					}
+				});
+			}
+
+			function test() {
+				console.log("test");
+			}
+
+			function uploadPhoto() {
+				// var imgURL="http://farm4.staticflickr.com/3332/3451193407_b7f047f4b4_o.jpg";//change with your external photo url
+				// FB.api('/photos', 'post', {
+				// 	message:'photo description',
+				// 	url:imgURL
+				// }, function(response){
+
+				// 	if (!response || response.error) {
+				// 		console.log('Error occured', response.error);
+				// 	} else {
+				// 		console.log('Post ID: ' + response.id);
+				// 	}
+
+				// });
+
+				img = new Image();
+				img.onload = uploadPhoto2
+				img.src = "tiger.jpg";
+
+
+			}
+
+			function uploadPhoto2() {
+				// var postMSG="Your message";
+				// var url='https://graph.facebook.com/albumID/photos?access_token='+accessToken+"&message="+postMSG;
+				// var imgURL="http://farm4.staticflickr.com/3332/3451193407_b7f047f4b4_o.jpg";//change with your external photo url
+				// var formData = new FormData();
+				// formData.append("url",imgURL);
+
+				// $.ajax({
+				// 	url: url,
+				// 	data: formData,
+				// 	cache: false,
+				// 	contentType: false,
+				// 	processData: false,
+				// 	type: 'POST',
+
+				// 	success: function(data){
+				// 		alert("POST SUCCESSFUL");
+				// 	}
+				// });
+
+				console.log(img)
+
+				imageData = getBase64Image(img)
+
+				postData = new Array();
+				boundary = '-----';
+
+
+				// $.ajax({
+				// 	type: "POST",
+				// 	url: "https://graph.facebook.com/me/photos",
+				// 	contentType: "multipart/form-data;",
+				// 	data: {
+				// 		message: "Your Msg Goes Here",
+				// 		filename: "myimage.png",
+				// 		name: "myimage.png",	
+				// 		access_token: accessToken,
+				// 		url: imageData,
+				// 		format: "json"
+				// 	},
+				// 	dataType: text,
+				// 	success: function(data) {
+				// 		console.log("POST SUCCESSFUL"); 
+				// 	}
+				// });
+
+				imagedecodeString = base64Decode(imageData)
+
+				dataString = '-------\r\nContent-Disposition: form-data; name="fileName"\r\n\r\nsouthParkAvatar.png\r\n-------\r\nContent-Disposition: form-data; name="access_token"\r\n\r\n'+accessToken+'\r\n-------\r\nContent-Disposition: form-data; name="message"\r\n\r\nMy Latest South Park Character\r\n-------\r\nContent-Disposition: form-data; name="southParkAvatar.png"; filename="southParkAvatar.png";southParkAvatar.png"\r\nimage/png\r\n\r\n' + imagedecodeString + '\r\n---------';
+
+
+				console.log (dataString);
+				//writeFileData("test_facebook.png", imageData);
+				close();
+
+				// $.ajax({
+				// 	type: "POST",
+				// 	url: "https://graph.facebook.com/me/photos",
+				// 	contentType: "multipart/form-data; boundary=-----",
+				// 	processData: false,
+				// 	data: dataString,
+				// 	dataType: "text",
+				// 	success: function(data) {
+				// 		console.log("POST SUCCESSFUL"); 
+				// 	}
+				// });
+
+				var xmlhttp;
+				if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+					xmlhttp=new XMLHttpRequest();
+				}
+				else {// code for IE6, IE5
+					xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+				}
+				xmlhttp.onreadystatechange=function() {
+					if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+						document.getElementById("myDiv").innerHTML=xmlhttp.responseText;
+					}
+				}
+
+				xmlhttp.open("POST","https://graph.facebook.com/me/photos",true);
+				xmlhttp.setRequestHeader("Content-type","multipart/form-data; boundary=-----");
+
+				writeFileData("test_facebook.png", imageData);
+				close();
+
+				uInt8Array = new Uint8Array(postData);
+
+				xmlhttp.send(uInt8Array.buffer);
+				
+			}
+
+		// function dataURItoBlob(dataURI) {
+		// 	// convert base64 to raw binary data held in a string
+		// 	// doesn't handle URLEncoded DataURIs
+		// 	// convert base64/URLEncoded data component to raw binary data held in a string
+		// 	var byteString;
+		// 	if (dataURI.split(',')[0].indexOf('base64') >= 0)
+		// 		byteString = atob(dataURI.split(',')[1]);
+		// 	else
+		// 		byteString = unescape(dataURI.split(',')[1]);
+
+		// 	// separate out the mime component
+		// 	var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
+
+		// 	// write the bytes of the string to an ArrayBuffer
+		// 	var ab = new ArrayBuffer(byteString.length);
+		// 	var ia = new Uint8Array(ab);
+		// 	for (var i = 0; i < byteString.length; i++) {
+		// 		ia[i] = byteString.charCodeAt(i);
+		// 	}
+
+		// 	// write the ArrayBuffer to a blob, and you're done
+		// 	var bb = new BlobBuilder();
+		// 	bb.append(ab);
+		// 	return bb.getBlob(mimeString);
+		// }
+
+		// function base64decode(base64) {
+		// 	return decodeURIComponent(escape(atob(base64)));
+		// }
+
+		function base64Decode(text){
+
+		    text = text.replace(/\s/g,"");
+
+		    if(!(/^[a-z0-9\+\/\s]+\={0,2}$/i.test(text)) || text.length % 4 > 0){
+		        throw new Error("Not a base64-encoded string.");
+		    }   
+
+		    //local variables
+		    var digits = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
+		        cur, prev, digitNum,
+		        i=0,
+		        result = [];
+
+		    text = text.replace(/=/g, "");
+
+		    while(i < text.length){
+
+		        cur = digits.indexOf(text.charAt(i));
+		        digitNum = i % 4;
+
+		        switch(digitNum){
+
+		            //case 0: first digit - do nothing, not enough info to work with
+
+		            case 1: //second digit
+		                result.push(String.fromCharCode(prev << 2 | cur >> 4));
+		                break;
+
+		            case 2: //third digit
+		                result.push(String.fromCharCode((prev & 0x0f) << 4 | cur >> 2));
+		                break;
+
+		            case 3: //fourth digit
+		                result.push(String.fromCharCode((prev & 3) << 6 | cur));
+		                break;
+		        }
+
+		        prev = cur;
+		        i++;
+		    }
+
+		    return result.join("");
+		}
+
+		function getBase64Image(img) {
+			// Create an empty canvas element
+			var canvas = document.createElement("canvas");
+			canvas.width = img.width;
+			canvas.height = img.height;
+
+			// Copy the image contents to the canvas
+			var ctx = canvas.getContext("2d");
+			ctx.drawImage(img, 0, 0);
+
+			// Get the data-URL formatted image
+			// Firefox supports PNG and JPEG. You could check img.src to
+			// guess the original format, but be aware the using "image/jpg"
+			// will re-encode the image.
+			var dataURL = canvas.toDataURL("image/png");
+
+			return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+		}
+
+		function bin2String(array) {
+			return String.fromCharCode.apply(String, array);
+		}
+
+		function pack(bytes) {
+			var chars = [];
+			for(var i = 0, n = bytes.length; i < n;) {
+				chars.push(((bytes[i++] & 0xff) << 8) | (bytes[i++] & 0xff));
+			}
+			return String.fromCharCode.apply(null, chars);
+		}
+
+		function dataURItoBlob(dataURI) {
+			var binary = atob(dataURI);
+			var array = [];
+			for(var i = 0; i < binary.length; i++) {
+				array.push(binary.charCodeAt(i));
+			}
+			return new Blob([new Uint8Array(array)], {type: 'text/plain'});
+		}
+
+		function dataURItoByteArray(dataURI) {
+			var binary = atob(dataURI);
+			for(var i = 0; i < binary.length; i++) {
+				postData.push(binary.charCodeAt(i));
+			}
+		}
+
+		function writeStringToByteArray(newString) {
+			for(var i = 0; i < newString.length; i++) {
+				postData.push(newString.charCodeAt(i));
+			}
+		}
+
+		function writeFileData(filename, fileData, contentType) {
+
+			var bytes;
+			var l;
+			var i;
+
+			postData = [];
+
+			writeBoundary();
+			writeLineBreak();
+
+			dataString = '-------\r\nContent-Disposition: form-data; name="fileName"\r\n\r\nsouthParkAvatar.png\r\n-------\r\nContent-Disposition: form-data; name="access_token"\r\n\r\n'+accessToken+'\r\n-------\r\nContent-Disposition: form-data; name="message"\r\n\r\nMy Latest South Park Character\r\n-------\r\nContent-Disposition: form-data; name="southParkAvatar.png"; filename="southParkAvatar.png";southParkAvatar.png"\r\nimage/png\r\n\r\n' + imagedecodeString + '\r\n---------';
+
+			writeStringToByteArray('Content-Disposition: form-data; name="fileName"');
+			writeLineBreak();
+			writeLineBreak();
+			writeStringToByteArray('southParkAvatar.png');
+			writeLineBreak();
+			writeBoundary();
+			writeLineBreak();
+			writeStringToByteArray('Content-Disposition: form-data; name="access_token"');
+			writeLineBreak();
+			writeLineBreak();
+			writeStringToByteArray(accessToken);
+			writeLineBreak();
+			writeBoundary();
+			writeLineBreak();
+			writeStringToByteArray('Content-Disposition: form-data; name="message"');
+			writeLineBreak();
+			writeLineBreak();
+			writeStringToByteArray('My Latest South Park Character');
+			writeLineBreak();
+			writeBoundary();
+			writeLineBreak();
+			writeStringToByteArray('Content-Disposition: form-data; name="southParkAvatar.png"; filename="southParkAvatar.png";southParkAvatar.png"');
+			writeLineBreak();
+			writeStringToByteArray('image/png');
+			writeLineBreak();
+			writeLineBreak();
+
+
+			// writeStringToByteArray('Content-Disposition: form-data; name="'+filename+'"; filename="'+filename+'";');
+
+			// //postData.writeUTFBytes(filename);
+
+			// //writeQuotationMark();
+			// writeLineBreak();
+
+			// bytes = contentType || "application/octet-stream";
+			// l = bytes.length;
+			// for (i=0; i<l; i++) {
+			// 	postData.push(bytes.charCodeAt(i));
+			// }
+
+			// writeLineBreak();
+			// writeLineBreak();
+
+			//fileData.position = 0;
+			//postData.writeBytes(fileData, 0, fileData.length);
+
+			dataURItoByteArray(fileData);
+
+			writeLineBreak();
+		}
+
+		function writeQuotationMark() {
+			postData.push(00100010);
+		}
+
+
+		function writeLineBreak() {
+			//postData.push(0x0d0a);
+			// postData.push(00001101);
+			// postData.push(00001010);
+
+			postData.push(13);
+			postData.push(10);
+		}
+
+		function writeBoundary() {
+			writeDoubleDash();
+
+			var l = boundary.length;
+			var i = 0;
+			for (i=0; i<l; i++)  {
+				postData.push(boundary.charCodeAt(i));
+			}
+		}
+
+		function writeDoubleDash() {
+			//postData.push(0x2d2d);
+			//postData.push(00101101);
+			//postData.push(00101101);
+
+			postData.push(45);
+			postData.push(45);
+		}
+
+		function close() {
+			writeBoundary();
+			writeDoubleDash();
+		}
+
+
+
+		</script>
+
+		<button onclick="fbLogin()">login</button>
+
+		<button onclick="uploadPhoto()">upload</button>
+
+		
+	</body>
+</html>
